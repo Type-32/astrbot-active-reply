@@ -1,0 +1,101 @@
+{
+  "classifier_backend": {
+    "type": "string",
+    "description": "完整性判断",
+    "default": "jev",
+    "options": [
+      "jev",
+      "none"
+    ],
+    "hint": "jev: 在线 JEV 决策模型判断是否说完 | none: 不判断，只按阅读延迟合并"
+  },
+  "jev_api_key": {
+    "type": "string",
+    "description": "OpenRouter API Key",
+    "default": "",
+    "hint": "在 openrouter.ai/keys 创建；留空时读取环境变量 OPENROUTER_API_KEY（使用 TypeSafe 地址时读取 TYPESAFE_API_KEY）。未配置时只按阅读延迟合并。",
+    "obvious_hint": true
+  },
+  "jev_base_url": {
+    "type": "string",
+    "description": "System One API 地址",
+    "default": "https://openrouter.ai/api/v1",
+    "hint": "默认 OpenRouter；也可填 TypeSafe 官方 https://api.typesafe.ai/v1 或兼容中转。不是 chat/completions 接口。"
+  },
+  "jev_model": {
+    "type": "string",
+    "description": "JEV 模型",
+    "default": "jev-latest",
+    "hint": "jev-latest 始终使用最新版；也可固定版本，如 typesafe/jev-1.14。"
+  },
+  "jev_timeout_seconds": {
+    "type": "float",
+    "description": "JEV 请求超时（秒）",
+    "default": 10,
+    "hint": "范围 (0,120]；超时或失败时直接提交已缓存消息。"
+  },
+  "send_threshold": {
+    "type": "float",
+    "description": "判断句子完整的概率阈值",
+    "default": 0.8,
+    "hint": "取值范围 0-1，越高则越严格（需要更高的完整概率才会发送）"
+  },
+  "delay_seconds": {
+    "type": "float",
+    "description": "每条消息最短等待时间（秒）",
+    "default": 0.8,
+    "hint": "收到消息后至少等待这么久再判断；长消息、图片按阅读时间自动延长（单条最多 5 秒）。设为 0 关闭延迟，每条消息立即判断"
+  },
+  "max_wait_seconds": {
+    "type": "float",
+    "description": "最长等待时间（秒）",
+    "default": 15,
+    "hint": "从第一条消息起计算，超过后无论是否说完都发送。设为 0 表示不限（直到判断完整）"
+  },
+  "enabled": {
+    "type": "bool",
+    "description": "是否启用消息防抖功能",
+    "default": true,
+    "hint": "关闭后插件将不拦截任何消息"
+  },
+  "usage_scope": {
+    "type": "string",
+    "description": "使用场景",
+    "options": [
+      "both",
+      "group",
+      "private"
+    ],
+    "default": "both",
+    "hint": "both: 群聊和私聊都使用 | group: 仅群聊使用 | private: 仅私聊使用"
+  },
+  "merge_group_followups": {
+    "type": "bool",
+    "description": "合并群聊中未 @ 机器人的后续消息",
+    "default": false,
+    "hint": "开启后，同一用户在等待期间发送的未 @ 消息也会被合并。可能误合并发给他人的消息"
+  },
+  "cancel_on_new_message": {
+    "type": "bool",
+    "description": "回复生成中收到新消息时取消回复",
+    "default": true,
+    "hint": "同一用户在回复送达前又发消息，会中止该回复（不写入历史）并与新消息合并后重新回复"
+  },
+  "jev_enable_images": {
+    "type": "bool",
+    "description": "启用 JEV 图片判断",
+    "default": true,
+    "hint": "使用原生实验性图片接口。中转服务需支持 assets 和 TypeSafe-Danger-Zone-Images 请求头。"
+  },
+  "jev_max_images": {
+    "type": "int",
+    "description": "JEV 单次最多判断图片数",
+    "default": 4,
+    "hint": "范围 1-8，超出时判断最近的图片；防抖仍保留全部图片供回复模型使用。",
+    "slider": {
+      "min": 1,
+      "max": 8,
+      "step": 1
+    }
+  }
+}
